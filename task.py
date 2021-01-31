@@ -7,7 +7,7 @@
 # типа int для рублей и копеек.
 # Дробная часть (копейки) при выводе на экран
 # должна быть отделена от целой части запятой.
-# Реализовать сложение, вычитание, деление сумм, деление суммы 
+# Реализовать сложение, вычитание, деление сумм, деление суммы
 # на дробное число, умножение на дробное число и операции сравнения.
 
 class Money:
@@ -16,31 +16,29 @@ class Money:
         self.roubles = int(roubles)
         self.kop = int(kop)
 
-    def display(self):
-        print(f'{self.roubles},{self.kop:02}')
+    def __str__(self):
+        return (f'{self.roubles},{self.kop:02}')
 
     def __add__(self, other):
-        add_kop = self.kop + other.kop
-        if add_kop >= 100:
-            add_roub = add_kop // 100
-            total_roub = self.roubles + other.roubles + add_roub
-            add_kop %= 100
-            total_kop = self.kop + other.kop + add_kop - add_roub * 100
-        else:
-            total_roub = self.roubles + other.roubles
-            total_kop = self.kop + other.kop
+        total = self.roubles * 100 + self.kop + other.roubles * 100 + other.kop
+        total_roub = total // 100
+        total_kop = total % 100
         return Money(total_roub, total_kop)
 
     def __sub__(self, other):
-        sub_kop = self.kop - other.kop
-        if sub_kop < 0:
-            self.roubles -= 1
-            sub_kop += 100
-        sub_roub = self.roubles - other.roubles
-        return Money(sub_roub, sub_kop)
+        total = self.roubles * 100 + self.kop - other.roubles * 100 - other.kop
+        total_roub = total // 100
+        total_kop = total % 100
+        return Money(total_roub, total_kop)
 
-    def division_summs(self, other):
-        return round((self.roubles * 100 + self.kop) / (other.roubles * 100 + other.kop), 2)
+    def __truediv__(self, other):
+        if isinstance(other, Money):
+            return round((self.roubles * 100 + self.kop) / (other.roubles * 100 + other.kop), 2)
+        else:
+            total = self.roubles * 100 + self.kop / other
+            total_roub = total // 100
+            total_kop = total % 100
+            return Money(total_roub, total_kop)
 
     def division_float(self, numb):
         total = (self.roubles * 100 + self.kop) / numb
@@ -56,12 +54,21 @@ class Money:
 
     def __gt__(self, other):
         return self.roubles * 100 + self.kop > other.roubles * 100 + other.kop
-    
+
     def __lt__(self, other):
         return self.roubles * 100 + self.kop < other.roubles * 100 + other.kop
 
     def __eq__(self, other):
         return self.roubles * 100 + self.kop < other.roubles * 100 + other.kop
+
+    def __ge__(self, other):
+        return self.roubles * 100 + self.kop >= other.roubles * 100 + other.kop
+
+    def __le__(self, other):
+        return self.roubles * 100 + self.kop <= other.roubles * 100 + other.kop
+
+    def __ne__(self, other):
+        return self.roubles * 100 + self.kop != other.roubles * 100 + other.kop
 
     def compasion(self, other):
         first = self.roubles * 100 + self.kop
@@ -76,20 +83,9 @@ class Money:
 
 if __name__ == "__main__":
     first_sum = Money(1, 65)
-    first_sum.display()
+    print(first_sum)
     second_sum = Money(2, 45)
-    second_sum.display()
-    # roub, kop = first_sum.add(second_sum)
-    # summa = Money(roub, kop)
-    # summa.display()
-    # first_sum.compasion(second_sum)
-    # print(first_sum.multiply(1.5))
-    # print(first_sum.division_float(2.5))
-    # print(first_sum.division_summs(second_sum))
-    # sub_roub, sub_kop = first_sum.subst(second_sum)
-    # subst = Money(sub_roub, sub_kop)
-    # subst.display()
-    third = first_sum - second_sum
-    third.display()
+    print(second_sum)
+    third = first_sum / second_sum
+    print(third)
     print(first_sum > second_sum)
-
